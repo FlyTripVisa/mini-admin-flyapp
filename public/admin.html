@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>FlyTripVisa Admin CRM</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;overflow-x:hidden}
+.wrap{min-height:100vh;display:flex;flex-direction:column}
+.admin-header{background:#0a0a0a;border-bottom:2px solid #07c160;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.admin-header h1{font-size:16px;font-weight:700;color:#07c160;display:flex;align-items:center;gap:6px}
+.admin-header .logo{font-size:12px;color:#888}
+.logout-btn{background:#1a1a1a;border:1px solid #333;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer}
+.container{max-width:900px;margin:0 auto;padding:16px;width:100%;flex:1}
+
+/* LOGIN */
+.login-card{background:#111;border:1px solid #222;border-radius:20px;padding:32px 24px;max-width:400px;margin:60px auto;text-align:center}
+.login-card .alien{font-size:48px;margin-bottom:8px}
+.login-card h2{font-size:20px;margin-bottom:6px;color:#07c160}
+.login-card p{font-size:12px;color:#888;margin-bottom:20px}
+.login-card input{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:15px;margin-bottom:12px;outline:none}
+.login-card input:focus{border-color:#07c160}
+.login-card button{width:100%;padding:14px;border-radius:12px;border:none;background:#07c160;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.login-card button:hover{background:#059c4d}
+.error-msg{color:#ff5a5a;font-size:13px;margin-top:12px;min-height:18px}
+
+/* DASHBOARD STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;text-align:center}
+.stat-card .icon{font-size:24px;margin-bottom:6px}
+.stat-card .num{font-size:24px;font-weight:700;color:#07c160}
+.stat-card .label{font-size:11px;color:#888;margin-top:4px}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:8px 16px;border-radius:20px;border:1px solid #333;background:#111;color:#aaa;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tab-btn.active{background:#07c160;border-color:#07c160;color:#fff}
+
+/* FORMS */
+.card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-bottom:16px}
+.card h3{font-size:15px;color:#07c160;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-row input,.form-row select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:14px;outline:none;margin-bottom:8px}
+.form-row input:focus,.form-row select:focus{border-color:#07c160}
+.form-row.full{grid-column:1/-1}
+.btn-submit{width:100%;padding:13px;border-radius:10px;border:none;background:#07c160;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-submit:hover{background:#059c4d}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+
+/* CLIENT LIST */
+.client-list{display:flex;flex-direction:column;gap:10px}
+.client-card{background:#111;border:1px solid #222;border-radius:14px;padding:14px}
+.client-card .top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.client-card .name{font-size:15px;font-weight:700}
+.client-card .email{font-size:12px;color:#888}
+.client-card .meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.client-card .tag{font-size:11px;padding:3px 8px;border-radius:6px;background:#1a1a1a;border:1px solid #333;color:#ccc}
+.client-card .tag.country{color:#38bdf8;border-color:#38bdf8}
+.client-card .tag.visa{color:#818cf8;border-color:#818cf8}
+.client-card .tag.amount{color:#4ade80;border-color:#4ade80}
+.status-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;text-transform:uppercase}
+.status-new{background:rgba(148,163,184,.15);color:#94a3b8}
+.status-pending{background:rgba(251,191,36,.15);color:#fbbf24}
+.status-approved{background:rgba(74,222,128,.15);color:#4ade80}
+.status-rejected{background:rgba(248,113,113,.15);color:#f87171}
+.status-issued{background:rgba(56,189,248,.15);color:#38bdf8}
+.client-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.client-actions select{padding:6px 10px;border-radius:8px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:12px;outline:none}
+.client-actions .btn{padding:6px 12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.client-actions .btn:hover{border-color:#07c160;color:#07c160}
+.client-actions .btn.primary{border-color:#07c160;color:#07c160}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px;color:#555}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.95);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;border:1px solid #333;z-index:9999;opacity:0;transition:.3s;max-width:90%}
+.toast.show{opacity:1}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="container">
+    <div class="login-card">
+      <div class="alien">👽</div>
+      <h2>FlyTripVisa Admin</h2>
+      <p>Visa Client CRM & Invoice System</p>
+      <input type="text" id="username" placeholder="Username" autocomplete="username">
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+      <button onclick="doLogin()">🚀 Login</button>
+      <p class="error-msg" id="loginError"></p>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="adminScreen" class="hidden">
+    <div class="admin-header">
+      <div>
+        <h1>👽 FlyTripVisa CRM</h1>
+        <span class="logo">Admin Panel</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+
+    <div class="container">
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="icon">🛂</div><div class="num" id="statClients">-</div><div class="label">Total Clients</div></div>
+        <div class="stat-card"><div class="icon">⏳</div><div class="num" id="statPending">-</div><div class="label">Pending</div></div>
+        <div class="stat-card"><div class="icon">💰</div><div class="num" id="statRevenue">-</div><div class="label">Revenue (USD)</div></div>
+        <div class="stat-card"><div class="icon">🧾</div><div class="num" id="statInvoices">-</div><div class="label">Invoices</div></div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('add')">➕ Add Client</button>
+        <button class="tab-btn" onclick="showTab('list')">📋 Clients</button>
+      </div>
+
+      <!-- ADD CLIENT -->
+      <div id="tabAdd">
+        <div class="card">
+          <h3>🆕 New Visa Application</h3>
+          <div class="form-row">
+            <input name="name" id="f_name" placeholder="Client Name *" required>
+            <input name="email" id="f_email" type="email" placeholder="Email *" required>
+          </div>
+          <div class="form-row">
+            <input name="phone" id="f_phone" placeholder="Phone">
+            <input name="country" id="f_country" placeholder="Country *" required>
+          </div>
+          <div class="form-row">
+            <input name="visa_type" id="f_visa_type" placeholder="Visa Type *" required>
+            <input name="passport_no" id="f_passport" placeholder="Passport No">
+          </div>
+          <div class="form-row">
+            <input name="amount" id="f_amount" type="number" placeholder="Amount (USD) *" required>
+          </div>
+          <button class="btn-submit" id="submitBtn" onclick="addClient()">💳 Create & Send Invoice</button>
+        </div>
+      </div>
+
+      <!-- CLIENT LIST -->
+      <div id="tabList" class="hidden">
+        <div class="client-list" id="clientList">
+          <div class="empty-state"><div class="icon">🛂</div><p>Loading clients...</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let TOKEN = localStorage.getItem("ftv_admin_token");
+let allClients = [];
+
+// Check auth on load
+if (TOKEN) { showAdmin(); }
+
+function doLogin() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  document.getElementById("loginError").textContent = "";
+  fetch("/api/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ user, pass })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      TOKEN = data.token;
+      localStorage.setItem("ftv_admin_token", TOKEN);
+      showAdmin();
+    } else {
+      document.getElementById("loginError").textContent = "❌ " + (data.error || "Invalid credentials");
+    }
+  })
+  .catch(() => {
+    document.getElementById("loginError").textContent = "❌ Server error. Check connection.";
+  });
+}
+
+function doLogout() {
+  localStorage.removeItem("ftv_admin_token");
+  TOKEN = null;
+  document.getElementById("loginScreen").classList.remove("hidden");
+  document.getElementById("adminScreen").classList.add("hidden");
+}
+
+function showAdmin() {
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("adminScreen").classList.remove("hidden");
+  loadStats();
+  loadClients();
+}
+
+function showTab(tab) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+  document.getElementById("tabAdd").classList.add("hidden");
+  document.getElementById("tabList").classList.add("hidden");
+  document.getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove("hidden");
+  if (tab === "list") loadClients();
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+async function loadStats() {
+  try {
+    const data = await fetch("/api/admin/stats?token=" + TOKEN).then(r => r.json());
+    document.getElementById("statClients").textContent = data.totalClients || 0;
+    document.getElementById("statPending").textContent = data.pendingClients || 0;
+    document.getElementById("statRevenue").textContent = "$" + (data.totalRevenue || 0).toFixed(0);
+    document.getElementById("statInvoices").textContent = data.totalInvoices || 0;
+  } catch(e) { console.error("Stats error:", e); }
+}
+
+async function loadClients() {
+  const list = document.getElementById("clientList");
+  list.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading...</p></div>';
+  try {
+    const data = await fetch("/api/admin/clients?token=" + TOKEN).then(r => r.json());
+    allClients = data.results || [];
+    if (allClients.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No clients yet</p></div>';
+      return;
+    }
+    list.innerHTML = allClients.map(c => `
+      <div class="client-card">
+        <div class="top-row">
+          <div>
+            <div class="name">${c.name}</div>
+            <div class="email">${c.email}</div>
+          </div>
+          <span class="status-badge status-${c.status || 'new'}">${c.status || 'new'}</span>
+        </div>
+        <div class="meta">
+          <span class="tag country">🌍 ${c.country}</span>
+          <span class="tag visa">📄 ${c.visa_type}</span>
+          <span class="tag amount">💰 $${(c.amount || 0).toFixed(2)}</span>
+          ${c.phone ? `<span class="tag">📞 ${c.phone}</span>` : ''}
+          ${c.passport_no ? `<span class="tag">🛂 ${c.passport_no}</span>` : ''}
+        </div>
+        <div class="client-actions">
+          <select onchange="updateStatus(${c.id}, this.value)">
+            <option value="new" ${c.status==='new'?'selected':''}>New</option>
+            <option value="pending" ${c.status==='pending'?'selected':''}>Pending</option>
+            <option value="approved" ${c.status==='approved'?'selected':''}>Approved</option>
+            <option value="issued" ${c.status==='issued'?'selected':''}>Issued</option>
+            <option value="rejected" ${c.status==='rejected'?'selected':''}>Rejected</option>
+          </select>
+          <a class="btn primary" href="/api/admin/invoice?token=${TOKEN}&key=invoices/FTV-${c.id}.pdf" target="_blank">🧾 Invoice</a>
+        </div>
+      </div>
+    `).join("");
+  } catch(e) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Error loading clients</p></div>';
+  }
+}
+
+async function addClient() {
+  const btn = document.getElementById("submitBtn");
+  const data = {
+    name: document.getElementById("f_name").value,
+    email: document.getElementById("f_email").value,
+    phone: document.getElementById("f_phone").value,
+    country: document.getElementById("f_country").value,
+    visa_type: document.getElementById("f_visa_type").value,
+    passport_no: document.getElementById("f_passport").value,
+    amount: parseFloat(document.getElementById("f_amount").value) || 0,
+  };
+
+  if (!data.name || !data.email || !data.country || !data.visa_type || !data.amount) {
+    showToast("⚠️ Please fill all required fields");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Processing...";
+
+  try {
+    const res = await fetch("/api/admin/clients?token=" + TOKEN, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(r => r.json());
+
+    if (res.ok) {
+      showToast("✅ Client added! Invoice sent to " + data.email);
+      // Clear form
+      ["f_name","f_email","f_phone","f_country","f_visa_type","f_passport","f_amount"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      loadStats();
+      showTab("list");
+    } else {
+      showToast("❌ Error: " + (res.error || "Failed to create client"));
+    }
+  } catch(e) {
+    showToast("❌ Server error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "💳 Create & Send Invoice";
+  }
+}
+
+async function updateStatus(id, status) {
+  try {
+    await fetch("/api/admin/clients/update?token=" + TOKEN, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ id, status })
+    }).then(r => r.json());
+    showToast("✅ Status updated to " + status);
+    loadStats();
+  } catch(e) {
+    showToast("❌ Failed to update status");
+  }
+}
+</script>
+</body>
+</html>
