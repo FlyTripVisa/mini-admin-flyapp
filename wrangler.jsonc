@@ -1,0 +1,96 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "miniprogram-admin",
+	"main": "src/server.ts",
+	"upload_source_maps": true,
+	"compatibility_date": "2026-10-15",
+	"compatibility_flags": ["nodejs_compat"],
+
+	// Static assets - SPA mode
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS",
+		"not_found_handling": "single-page-application"
+	},
+
+	// AI bindings
+	"ai": {
+		"binding": "AI"
+	},
+	"ai_search": [
+		{
+			"binding": "AI_SEARCH",
+			"instance_name": "flytripvisa"
+		}
+	],
+
+	// Durable Object bindings for agents
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "MyAgent",
+				"class_name": "MyAgent"
+			},
+			{
+				"name": "ChatAgent",
+				"class_name": "ChatAgent"
+			}
+		]
+	},
+
+	// Provision storage for each agent class
+	"exports": {
+		"MyAgent": {
+			"type": "durable-object",
+			"storage": "sqlite"
+		},
+		"ChatAgent": {
+			"type": "durable-object",
+			"storage": "sqlite"
+		}
+	},
+
+	// D1 Databases
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "flytripvisa-db",
+			"database_id": "f274effd-ff6e-4c75-b8a8-4083726232fe"
+		},
+		{
+			"binding": "DB2",
+			"database_name": "flydb-d1",
+			"database_id": "bc449b24-09b3-4ecd-a599-b78d0127f594"
+		}
+	],
+
+	// KV Namespace
+	"kv_namespaces": [
+		{
+			"binding": "KV_BINDING",
+			"id": "2085403b5d774d1bbd333bcb8ea0d80b"
+		}
+	],
+
+	// Browser Rendering
+	"browser": {
+		"binding": "BROWSER"
+	},
+
+	// R2 Buckets
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "flytripvisa-media"
+		},
+		{
+			"binding": "AI_CHAT_BUCKET",
+			"bucket_name": "ai-chat"
+		}
+	],
+
+	// Observability
+	"observability": {
+		"enabled": true
+	}
+}

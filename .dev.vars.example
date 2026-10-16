@@ -1,0 +1,7 @@
+# Copy to .dev.vars and fill in values
+# Admin credentials (already set: flytripvisa / pass1122)
+
+# R2 S3-compatible credentials (for reference)
+# R2_ACCESS_KEY_ID=your_access_key
+# R2_SECRET_ACCESS_KEY=your_secret_key
+# R2_BUCKET_URL=https://b73b80fa62deef032d3c08248cf2f30b.r2.cloudflarestorage.com

@@ -1,0 +1,24 @@
+{
+  "name": "miniprogram-admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typegen": "wrangler types",
+    "db:init": "wrangler d1 execute flytripvisa-db --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.0",
+    "@cloudflare/workers-types": "^4.20241010.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "@cloudflare/agents": "^0.1.0"
+  }
+}
